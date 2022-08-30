@@ -2,7 +2,7 @@ const Joi = require("joi");
 
 const validateAddContactFields = (req, res, next) => {
   const { name, email, phone, favorite } = req.body;
-  if (!name || !email || !phone || (favorite ?? true)) {
+  if (!name || !email || !phone || ((favorite ?? true) && !favorite)) {
     return res.status(400).json({ message: "missing required field" });
   }
 
