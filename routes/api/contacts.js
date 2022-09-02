@@ -1,34 +1,44 @@
 const express = require("express");
 const {
-  listContacts,
-  getById,
-  addContact,
-  removeContact,
-  updateContact,
+  getContactsController,
+  getContactByIdController,
+  addContactController,
+  removeContactController,
+  updateContactController,
+  updateStatusContactController,
 } = require("../controllers/contactsController");
 const {
   validateAddContactFields,
   validateUpdateContactFields,
+  validateUpdateFavoriteFields,
 } = require("../../middlewares/validationMiddleware");
-const { collectionMiddleware } = require("../../middlewares/models");
+
 const { controllerWraper } = require("../../helpers/apiHelpers");
 
 const router = express.Router();
 
-router.use(collectionMiddleware);
+router.get("/", controllerWraper(getContactsController));
 
-router.get("/", controllerWraper(listContacts));
+router.get("/:contactId", controllerWraper(getContactByIdController));
 
-router.get("/:contactId", controllerWraper(getById));
+router.post(
+  "/",
+  validateAddContactFields,
+  controllerWraper(addContactController)
+);
 
-router.post("/", validateAddContactFields, controllerWraper(addContact));
-
-router.delete("/:contactId", controllerWraper(removeContact));
+router.delete("/:contactId", controllerWraper(removeContactController));
 
 router.put(
   "/:contactId",
   validateUpdateContactFields,
-  controllerWraper(updateContact)
+  controllerWraper(updateContactController)
+);
+
+router.patch(
+  "/:contactId/favorite",
+  validateUpdateFavoriteFields,
+  controllerWraper(updateStatusContactController)
 );
 
 module.exports = router;
