@@ -1,46 +1,48 @@
 const { Contact } = require("../db/contactModel");
 const { WrongParameterError } = require("../helpers/errors");
 
-const getContacts = async () => {
-  const contacts = await Contact.find();
+const getContacts = async (userId) => {
+  const contacts = await Contact.find({ userId });
   return contacts;
 };
 
-const getContactById = async (id) => {
+const getContactById = async (contactId, userId) => {
   try {
-    const contact = await Contact.findById(id);
+    const contact = await Contact.findOne({ _id: contactId, userId });
     if (!contact) {
-      return { message: `Contact with ID: ${id} not found` };
+      return { message: `Contact with ID: ${contactId} not found` };
     }
     return contact;
   } catch (error) {
-    throw new WrongParameterError(`Failure, contact with id: ${id} not found`);
+    throw new WrongParameterError(
+      `Failure, contact with id: ${contactId} not found`
+    );
   }
 };
 
-const addContact = async ({ name, email, phone, favorite }) => {
-  const contact = new Contact({ name, email, phone, favorite });
+const addContact = async ({ name, email, phone, favorite }, userId) => {
+  const contact = new Contact({ name, email, phone, favorite, userId });
   const result = await contact.save();
   return result;
 };
 
-const removeContact = async (id) => {
-  const contact = await Contact.findByIdAndRemove(id);
+const removeContact = async (contactId, userId) => {
+  const contact = await Contact.findOneAndRemove({ _id: contactId, userId });
   return contact;
 };
 
-const updateContact = async (id, body) => {
-  const contact = await Contact.findByIdAndUpdate(
-    id,
+const updateContact = async (contactId, body, userId) => {
+  const contact = await Contact.findOneAndUpdate(
+    { _id: contactId, userId },
     { $set: { ...body } },
     { returnDocument: "after" }
   );
   return contact;
 };
 
-const updateStatusContact = async (id, favorite) => {
+const updateStatusContact = async (contactId, favorite, userId) => {
   const contact = await Contact.findByIdAndUpdate(
-    id,
+    { _id: contactId, userId },
     { $set: { favorite } },
     { returnDocument: "after" }
   );

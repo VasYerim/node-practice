@@ -1,4 +1,4 @@
-const { ValidationError, WrongParameterError } = require("./errors");
+const { ContactServiceError } = require("./errors");
 
 const controllerWraper = (controler) => {
   return (req, res, next) => {
@@ -11,11 +11,10 @@ const unknownRouteHandler = (req, res) => {
 };
 
 const errorHandler = (error, req, res, next) => {
-  if (
-    error instanceof ValidationError ||
-    error instanceof WrongParameterError
-  ) {
-    return res.status(error.status).json({ message: error.message });
+  if (error instanceof ContactServiceError) {
+    return res
+      .status(error.status)
+      .json({ message: JSON.stringify(error.message) });
   }
   res.status(500).json({ message: error.message });
 };

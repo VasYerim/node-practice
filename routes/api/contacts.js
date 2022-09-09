@@ -12,10 +12,12 @@ const {
   validateUpdateContactFields,
   validateUpdateFavoriteFields,
 } = require("../../middlewares/validationMiddleware");
-
 const { controllerWraper } = require("../../helpers/apiHelpers");
+const {authMiddleware } = require('../../middlewares/authMiddleware');
 
 const router = express.Router();
+
+router.use(authMiddleware);
 
 router.get("/", controllerWraper(getContactsController));
 
